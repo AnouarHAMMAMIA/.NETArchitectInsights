@@ -101,7 +101,7 @@ namespace Savana.Persistence.CachingRepositories
 
 ```
 
-To prevent hardcoding experation time a slightly better approche is to define a generic cache duration as shown below:
+To avoid hardcoding expiration times, a more effective approach is to establish a generic cache duration, as demonstrated below:
 
 ```c#
 using Microsoft.Extensions.Caching.Memory;
@@ -135,7 +135,8 @@ namespace Savana.Persistence.CachingRepositories
 }
 ```
 
- To further clean up the hardcoded cache key, another step is to create a static class called ***CacheKeys*** and then inside of this class, i'll define my individual cache key as below:
+ To further eliminate hardcoded cache keys, another step involves creating a static class named ***CacheKeys***. Within this class, individual cache keys can be defined, as depicted below:
+ 
 ```c#
 namespace Savana.Persistence.Configurations
 {
