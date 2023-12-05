@@ -197,8 +197,7 @@ And finally update the dependency injection as illustrated below:
         }
 ```
 
-Hope this was helpful.
-See you in the next week.
+I hope this was helpful. See you next week!
 
 
 
