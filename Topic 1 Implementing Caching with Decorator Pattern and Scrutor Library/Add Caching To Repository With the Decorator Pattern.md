@@ -9,7 +9,7 @@ Today, we'll delve into the process of implementing caching into your repository
 
 The goal of this pattern is to extend new behavior to your class without impacting the original implimentation.
 
-Here i want to add a caching behavior to ***GetById*** method within my class ***ExerciceRepository***  as shown below:
+Here i want to add a caching behavior to ***GetById*** method within my class ***ExerciseRepository***  as shown below:
 
 ![Alt text](image-2.png)
 ```c#
@@ -17,29 +17,29 @@ using Savana.Persistence.IRepositories;
 
 namespace Savana.Persistence.Repositories
 {
-    public sealed class ExerciceRepository : IExerciceRepository
+    public sealed class ExerciseRepository : IExerciseRepository
     {
         private readonly SavanaDbContext _dbContext;
 
-        public ExerciceRepository(SavanaDbContext dbContext)
+        public ExerciseRepository(SavanaDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<Exercice?> GetById(Guid id, CancellationToken cancellationToken =default)
+        public async Task<Exercise?> GetById(Guid id, CancellationToken cancellationToken =default)
         {
-            return await _dbContext.Set<Exercice>()
-                .FirstOrDefaultAsync(exercice => exercice.id = id, cancellationToken);
+            return await _dbContext.Set<Exercise>()
+                .FirstOrDefaultAsync(exercise => exercise.id = id, cancellationToken);
         }
     }
 }
 ```
 
 Im going to use the scrutor library to add support for dependency injection 
-so in runtime i can provide the decoration implementation of the Exercice Repository.
+so in runtime i can provide the decoration implementation of the Exercise Repository.
 
 
-To proceed, I'll create a new folder which i called ***CachingRepositories***. Within this folder, I'll create a new class titled ***CachingExerciceRepository*** as below:
+To proceed, I'll create a new folder which i called ***CachingRepositories***. Within this folder, I'll create a new class titled ***CachingExerciseRepository*** as below:
 
 ![Alt text](image-3.png)
 
@@ -48,25 +48,25 @@ using Savana.Persistence.IRepositories;
 
 namespace Savana.Persistence.CachingRepositories
 {
-    public sealed class CachingExerciceRepository : IExerciceRepository
+    public sealed class CachingExerciseRepository : IExerciseRepository
     {
-        private readonly IExerciceRepository _exerciceRepository;
+        private readonly IExerciseRepository _exerciseRepository;
 
-        public CachingExerciceRepository(IExerciceRepository exerciceRepository)
+        public CachingExerciseRepository(IExerciseRepository exerciseRepository)
         {
-            _exerciceRepository = exerciceRepository;
+            _exerciseRepository = exerciseRepository;
         }
 
-        public async Task<Exercice> GetById(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Exercise> GetById(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _exerciceRepository.GetById(id, cancellationToken);
+            return await _exerciseRepository.GetById(id, cancellationToken);
         }
     }
 }
 ```
 
-This class implements the ***IExerciceRepository*** interface.
- Additionally, I've injected an instance of the ***IExerciceRepository*** to access the existing service registration of this interface, which, in our case, refers to the ***ExerciceRepository***. Here, I'll implement all the interface methods using this base implementation.
+This class implements the ***IExerciseRepository*** interface.
+ Additionally, I've injected an instance of the ***IExerciseRepository*** to access the existing service registration of this interface, which, in our case, refers to the ***ExerciseRepository***. Here, I'll implement all the interface methods using this base implementation.
 To introduce caching behavior, i'll inject an instance of ***IMemoryCache*** into my class and i will implement caching as below:
 
 ```c#
@@ -75,25 +75,25 @@ using Savana.Persistence.IRepositories;
 
 namespace Savana.Persistence.CachingRepositories
 {
-    public sealed class CachingExerciceRepository : IExerciceRepository
+    public sealed class CachingExerciseRepository : IExerciseRepository
     {
-        private readonly IExerciceRepository _exerciceRepository;
+        private readonly IExerciseRepository _exerciseRepository;
         private readonly IMemoryCache _memoryCache;
 
 
-        public CachingExerciceRepository(IExerciceRepository exerciceRepository, IMemoryCache memoryCache)
+        public CachingExerciseRepository(IExerciseRepository exerciseRepository, IMemoryCache memoryCache)
         {
-            _exerciceRepository = exerciceRepository;
+            _exerciseRepository = exerciseRepository;
             _memoryCache = memoryCache;
         }
 
-        public async Task<Exercice> GetById(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Exercise> GetById(Guid id, CancellationToken cancellationToken = default)
         {
             return _memoryCache.GetOrCreateAsync($"exercie-{id}",
                 async _cacheEntry =>
                 {
                     _cacheEntry.SetAbsoluteExpiration(TimeSpan.FromHours(5));
-                    return await _exerciceRepository.GetById(id, cancellationToken);
+                    return await _exerciseRepository.GetById(id, cancellationToken);
                 });
         }
     }
@@ -109,26 +109,26 @@ using Savana.Persistence.IRepositories;
 
 namespace Savana.Persistence.CachingRepositories
 {
-    public sealed class CachingExerciceRepository : IExerciceRepository
+    public sealed class CachingExerciseRepository : IExerciseRepository
     {
-        private readonly IExerciceRepository _exerciceRepository;
+        private readonly IExerciseRepository _exerciseRepository;
         private readonly IMemoryCache _memoryCache;
         private static readonly TimeSpan expirationTime = TimeSpan.FromHours(5);
 
 
-        public CachingExerciceRepository(IExerciceRepository exerciceRepository, IMemoryCache memoryCache)
+        public CachingExerciseRepository(IExerciseRepository exerciseRepository, IMemoryCache memoryCache)
         {
-            _exerciceRepository = exerciceRepository;
+            _exerciseRepository = exerciseRepository;
             _memoryCache = memoryCache;
         }
 
-        public async Task<Exercice> GetById(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Exercise> GetById(Guid id, CancellationToken cancellationToken = default)
         {
             return _memoryCache.GetOrCreateAsync($"exercie-{id}",
                 async _cacheEntry =>
                 {
                     _cacheEntry.SetAbsoluteExpiration(expirationTime);
-                    return await _exerciceRepository.GetById(id, cancellationToken);
+                    return await _exerciseRepository.GetById(id, cancellationToken);
                 });
         }
     }
@@ -141,12 +141,12 @@ namespace Savana.Persistence.Configurations
 {
     public static class CacheKeys
     {
-        public static Func<Guid,string> ExerciceById = exerciceId=>$"exercice-{exerciceId}";
+        public static Func<Guid,string> ExerciseById = exerciseId=>$"Exercise-{exerciseId}";
     }
 }
 ````
 
-Finally my ***CachingExerciceRepository*** will look like that:
+Finally my ***CachingExerciseRepository*** will look like that:
  
 ```c#
 using Microsoft.Extensions.Caching.Memory;
@@ -155,26 +155,26 @@ using Savana.Persistence.IRepositories;
 
 namespace Savana.Persistence.CachingRepositories
 {
-    public sealed class CachingExerciceRepository : IExerciceRepository
+    public sealed class CachingExerciseRepository : IExerciseRepository
     {
-        private readonly IExerciceRepository _exerciceRepository;
+        private readonly IExerciseRepository _exerciseRepository;
         private readonly IMemoryCache _memoryCache;
         private static readonly TimeSpan expirationTime = TimeSpan.FromHours(5);
 
 
-        public CachingExerciceRepository(IExerciceRepository exerciceRepository, IMemoryCache memoryCache)
+        public CachingExerciseRepository(IExerciseRepository exerciseRepository, IMemoryCache memoryCache)
         {
-            _exerciceRepository = exerciceRepository;
+            _exerciseRepository = exerciseRepository;
             _memoryCache = memoryCache;
         }
 
-        public async Task<Exercice> GetById(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Exercise> GetById(Guid id, CancellationToken cancellationToken = default)
         {
-            return _memoryCache.GetOrCreateAsync(CacheKeys.ExerciceById,
+            return _memoryCache.GetOrCreateAsync(CacheKeys.ExerciseById,
                 async _cacheEntry =>
                 {
                     _cacheEntry.SetAbsoluteExpiration(expirationTime);
-                    return await _exerciceRepository.GetById(id, cancellationToken);
+                    return await _exerciseRepository.GetById(id, cancellationToken);
                 });
         }
     }
@@ -190,14 +190,14 @@ And finally update the dependency injection as illustrated below:
 ```c#
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            services.AddScoped<IExerciceRepository, ExerciceRepository>;
-            services.Decorate<IExerciceRepository, CachingExerciceRepository>;
+            services.AddScoped<IExerciseRepository, ExerciseRepository>;
+            services.Decorate<IExerciseRepository, CachingExerciseRepository>;
             return services;
         }
 ```
 
 Hope this was helpful.
-See you in the next newsletter
+See you in the next week.
 
 
 
