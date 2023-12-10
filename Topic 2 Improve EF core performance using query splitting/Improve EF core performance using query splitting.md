@@ -5,7 +5,9 @@
 
 
 
-Hello everyone, today we will discuss the **Query Splitting** feature introduced in EF Core 5. Query splitting enables you to instruct Entity Framework to split your SQL query into multiple queries rather than one large query. Let's explore how to leverage query splitting to our advantage.
+Hello everyone, today we will discuss the **Query Splitting** feature introduced in EF Core 5. 
+
+Query splitting enables you to instruct Entity Framework to split your SQL query into multiple queries rather than one large query. Let's explore how to leverage query splitting to our advantage.
 
 We'll start with the **SchoolController**. This controller contains a single endpoint named **GetById**, which accepts a School ID from the route and returns the corresponding School object.
 
