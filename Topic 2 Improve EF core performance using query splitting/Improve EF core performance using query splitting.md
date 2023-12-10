@@ -1,3 +1,9 @@
+### Improve EF core performance using query splitting
+
+**Read time**: 5 minutes.
+##
+
+
 
 Hello everyone, today we will discuss the **Query Splitting** feature introduced in EF Core 5. Query splitting enables you to instruct Entity Framework to split your SQL query into multiple queries rather than one large query. Let's explore how to leverage query splitting to our advantage.
 
