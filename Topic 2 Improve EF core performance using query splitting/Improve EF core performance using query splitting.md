@@ -50,7 +50,7 @@ namespace BlogApp.Controllers
 ```
 
 
-As evident here, the **SchoolController** relies on a single dependency, namely the **DataContext**. Within the **GetById** implementation, we access the **Schools** DB Set, including both the **Teachers** and **Students** while retrieving the School by its ID. In case the School is not found, we return a failure result, specifically a 404 not found error. In case of a happy path, we return a new instance of School.
+As evident here, the **SchoolController** relies on a single dependency, namely the **_context**. Within the **GetById** implementation, we access the **Schools** DB Set, including both the **Teachers** and **Students** while retrieving the School by its ID. In case the School is not found, we return a failure result, specifically a 404 not found error. In case of a happy path, we return a new instance of School.
 
 This SQL query showcases the generation by Entity Framework when invoking the **GetById** endpoint.
 
@@ -67,7 +67,7 @@ ORDER BY [t].[Id], [t0].[Id]
 ```
 As you can observe, the query retrieves School data based on its ID from the **Schools** table. It executes a join on the **Teachers** table to gather teachers details and further joins the **Students** table to collect information about the students.
 
-EF Core generates a single extensive query encompassing multiple join statements, one for each Include statement. Handling a large amount of data from this query may lead to a phenomenon termed Cartesian Explosion. This could significantly elongate SQL query execution times and occasionally result in timeouts. I recently encountered and resolved this issue, and I'll demonstrate the resolution.
+EF Core generates a single extensive query encompassing multiple join statements, one for each Include statement. Handling a large amount of data from this query may lead to a phenomenon termed ***Cartesian Explosion***. This could significantly elongate SQL query execution times and occasionally result in timeouts. I recently encountered and resolved this issue, and I'll demonstrate the resolution.
 
 In the EF Core-generated query, each Include statement triggers EF Core to generate a corresponding Join statement. To tackle this, we can use **Query Splitting**. This instructs EF Core to dispatch separate SQL queries for each Include statement, as shown below:
 
