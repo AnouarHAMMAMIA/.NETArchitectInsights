@@ -1,4 +1,4 @@
-### Improve EF Core performance using query splitting
+### Improve EF Core performance using Query Splitting
 
 **Read time**: 5 minutes.
 ##
