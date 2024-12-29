@@ -86,7 +86,7 @@ This code sets up a basic ASP.NET Core application, adds Carter services, and ma
 
  ### Summary
 
-    In conclusion, using minimal APIs with Carter offers a streamlined alternative to traditional controllers by simplifying the development process. This approach enhances efficiency and maintainability, allowing developers to focus more on core logic and less on repetitive setup, especially for small applications or microservices.
+In conclusion, using minimal APIs with Carter offers a streamlined alternative to traditional controllers by simplifying the development process. This approach enhances efficiency and maintainability, allowing developers to focus more on core logic and less on repetitive setup, especially for small applications or microservices.
 
 
 
